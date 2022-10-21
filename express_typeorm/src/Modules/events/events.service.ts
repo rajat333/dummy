@@ -92,7 +92,25 @@ export class EventsService {
      */
 
   async getEventsWithWorkshops() {
-    throw new Error('TODO task 1');
+    try {
+      const result: any = await this.eventRepository.createQueryBuilder("event").leftJoinAndSelect("event.workshops", "workshop").getMany()
+      const sortedResponse = result.map((e: any) => {
+        const { workshops, ...data } = e;
+        workshops.sort((a: any, b: any) => {
+          if (a.id > b.id) return 1;
+
+          return -1;
+        });
+        return {
+          ...data,
+          workshops
+        }
+      });
+
+      return sortedResponse;
+    } catch (error) {
+      return error;
+    }
   }
 
   /* TODO: complete getFutureEventWithWorkshops so that it returns events with workshops, that have not yet started
